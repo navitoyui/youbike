@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>YouBike 預測查詢</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    label, select, input, button { margin: 0.5em 0; }
+  </style>
+</head>
+<body>
+  <h1>台北市 YouBike 站點未來可租借預測</h1>
+  <div>
+    <label>選擇站點：</label>
+    <select id="stationSelect"></select>
+    <label>預測幾分鐘後：</label>
+    <input type="number" id="futureMin" value="10" min="1" max="60">
+    <button onclick="predict()">查詢預測</button>
+  </div>
+  <div id="result" style="margin-top:2em;"></div>
+
+  <script>
+    // 1. 取得即時站點資料
+    let stations = [];
+    async function fetchStations() {
+      // 取得即時資料 (台北市YouBike v2.0 API)
+      // 站點資訊: https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.json
+      // 即時數量: https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.json
+      const resp = await fetch('https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.json');
+      const json = await resp.json();
+      stations = Object.values(json.retVal);
+      const select = document.getElementById('stationSelect');
+      stations.forEach(station => {
+        const opt = document.createElement('option');
+        opt.value = station.sno;
+        opt.textContent = `${station.sna} (${station.sno})`;
+        select.appendChild(opt);
+      });
+    }
+
+    async function predict() {
+      const select = document.getElementById('stationSelect');
+      const sno = select.value;
+      const station = stations.find(s => s.sno === sno);
+      const futureMin = parseInt(document.getElementById('futureMin').value, 10);
+
+      // 準備模型所需欄位
+      const now = new Date();
+      const minute_of_day = now.getHours() * 60 + now.getMinutes();
+      const is_weekend = (now.getDay() === 6 || now.getDay() === 0) ? 1 : 0;
+      const available_rent_bikes = parseInt(station.sbi, 10);
+
+      // 呼叫你的 Cloud Run API
+      const apiUrl = "https://youbike-api-xxxxx.a.run.app/predict"; // 換成你的 API URL
+      const body = {
+        sno,
+        minute_of_day,
+        is_weekend,
+        available_rent_bikes
+      };
+
+      const resp = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const result = await resp.json();
+
+      document.getElementById('result').innerHTML =
+        `<h3>預測結果</h3>
+        <p>站點：${station.sna} (${sno})</p>
+        <p>目前可借：${available_rent_bikes} 輛</p>
+        <p>${futureMin} 分鐘後預測可借：<b>${result.predicted_rent_bikes}</b> 輛</p>`;
+    }
+
+    fetchStations();
+  </script>
+</body>
+</html>
