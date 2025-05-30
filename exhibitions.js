@@ -1,8 +1,6 @@
-// == 展覽功能完整版 (只顯示地圖畫面內展覽、綠色地標、閱讀更多/收合) ==
+// == 展覽功能完整版 (僅用內建圖檔，marker 綠色) ==
 
-// 儲存目前綠色展覽 marker
 let exhibitionHighlightMarker = null;
-
 let allExhibitions = {
     coming: [],
     now: []
@@ -85,7 +83,7 @@ function renderExhibitionCards(exhibitions) {
                     mapInstance.removeLayer(exhibitionHighlightMarker);
                 }
 
-                // 建立綠色 marker
+                // 建立綠色 marker（用 className 變色，圖檔為內建）
                 const greenIcon = L.icon({
                     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
                     iconSize: [25, 41],
