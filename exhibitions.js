@@ -1,6 +1,6 @@
-// == 展覽功能完整版 (只顯示地圖畫面內展覽、紅色地標、閱讀更多/收合) ==
+// == 展覽功能完整版 (只顯示地圖畫面內展覽、綠色地標、閱讀更多/收合) ==
 
-// 儲存目前紅色展覽 marker
+// 儲存目前綠色展覽 marker
 let exhibitionHighlightMarker = null;
 
 let allExhibitions = {
@@ -49,7 +49,7 @@ function renderExhibitionCards(exhibitions) {
     const container = document.getElementById("exhibition-content");
     if (!exhibitions.length) {
         container.innerHTML = "<p>目前畫面內無符合條件的展覽。</p>";
-        // 也移除紅色 marker
+        // 也移除 marker
         if (exhibitionHighlightMarker && getMapInstance()) {
             getMapInstance().removeLayer(exhibitionHighlightMarker);
             exhibitionHighlightMarker = null;
@@ -85,18 +85,18 @@ function renderExhibitionCards(exhibitions) {
                     mapInstance.removeLayer(exhibitionHighlightMarker);
                 }
 
-                // 建立紅色 marker
+                // 建立綠色 marker
                 const greenIcon = L.icon({
                     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
                     iconSize: [25, 41],
                     iconAnchor: [12, 41],
                     popupAnchor: [1, -34],
                     shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-                    shadowSize: [41, 41]
+                    shadowSize: [41, 41],
                     className: 'leaflet-marker-green'
                 });
 
-                exhibitionHighlightMarker = L.marker([lat, lng], { icon: redIcon })
+                exhibitionHighlightMarker = L.marker([lat, lng], { icon: greenIcon })
                     .addTo(mapInstance)
                     .bindPopup(title)
                     .openPopup();
