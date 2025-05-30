@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <title>YouBike 預測查詢</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+    label, select, input, button { margin: 0.5em 0; }
+  </style>
+</head>
+
+<body>
+    <h1>台北市 YouBike 站點未來可租借/可停車預測</h1>
+    <div>
+        <label>搜尋站點：</label>
+        <input type="text" id="stationSearch" placeholder="輸入站名或編號">
+        <label>選擇站點：</label>
+        <select id="stationSelect"></select>
+        <label>預測幾分鐘後：</label>
+        <input type="number" id="futureMin" value="10" min="1" max="60">
+        <button onclick="predict()">查詢預測</button>
+    </div>
+    <div id="stationInfo" style="margin-top:1em; font-weight:bold;"></div>
+    <div id="result" style="margin-top:2em;"></div>
+    <script src="idxset.js"></script>
+</body>
+
+</html>
