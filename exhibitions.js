@@ -8,6 +8,7 @@ let allExhibitions = {
     now: []
 };
 let currentExhibitionState = "now"; // "now" or "coming"
+let exhibitionMarker = null; // 用於地點查看的紅色地標
 
 // 讀取展覽資料並快取
 async function fetchAllExhibitions() {
@@ -67,6 +68,21 @@ function renderExhibitionCards(exhibitions) {
             const mapInstance = getMapInstance();
             if (mapInstance && !isNaN(lat) && !isNaN(lng)) {
                 mapInstance.flyTo([lat, lng], 17, { duration: 1.2 });
+                // 移除舊有紅色地標
+                if (exhibitionMarker && mapInstance.hasLayer(exhibitionMarker)) {
+                    mapInstance.removeLayer(exhibitionMarker);
+                }
+                // 建立紅色 marker
+                exhibitionMarker = L.marker([lat, lng], {
+                    icon: L.icon({
+                        iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-red.png",
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+                        shadowSize: [41, 41]
+                    })
+                }).addTo(mapInstance);
             }
         });
     });
@@ -101,6 +117,10 @@ async function loadExhibitions(state = "now") {
     const mapInstance = getMapInstance();
     const exhibitions = allExhibitions[state].filter(ex => isExhibitionInMapView(ex, mapInstance));
     renderExhibitionCards(exhibitions);
+    // 當切換展覽時，移除紅色 marker
+    if (exhibitionMarker && mapInstance && mapInstance.hasLayer(exhibitionMarker)) {
+        mapInstance.removeLayer(exhibitionMarker);
+    }
 }
 
 // 當地圖移動時，重新過濾展覽
