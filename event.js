@@ -2,7 +2,7 @@
 
 let eventHighlightMarker = null;
 let allEvents = [];
-const EVENT_JSON = "travel_taipei_now.json";
+const EVENT_JSON = "travel_taipei.json";
 
 // 取得全域地圖物件
 function getMapInstance() {
