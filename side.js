@@ -9,16 +9,17 @@ function switchTab(tabId) {
     document.getElementById(`${tabId}-tab`).classList.add("active");
 }
 
-function switchExhibit(viewType) {
-    document.getElementById("exhibit-coming").classList.remove("active");
-    document.getElementById("exhibit-now").classList.remove("active");
+// 展覽切換
+function toggleExhibitionView(viewType) {
+    document.getElementById("exhibition-upcoming-btn").classList.remove("active");
+    document.getElementById("exhibition-ongoing-btn").classList.remove("active");
     if (viewType === "upcoming") {
         document.addEventListener("DOMContentLoaded", function() {
-            loadinfo("coming");
+            loadExhibitions("coming");
         });
     } else {
         document.addEventListener("DOMContentLoaded", function() {
-            loadinfo("now");
+            loadExhibitions("now");
         });
     }
 }
