@@ -84,7 +84,7 @@ for link in event_links:
     except Exception as e:
         organizer = ""
     try:
-        organizer_link = driver.find_element(By.XPATH, road1 + 'section[1]/div[4]/div[3]/div/a').get_attribute("href")
+        organizer_link = driver.find_element(By.XPATH, road1 + 'section[1]/div[4]/div[3]/div/a').text
     except Exception as e:
         organizer_link = ""
     try:
