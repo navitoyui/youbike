@@ -1,6 +1,6 @@
 let eventMark = null;
 let allEvents = [];
-const eventjs = "json/travel_taipei.json";
+const eventjs = "youbike/json/travel_taipei.json";
 
 function getMap() {
     return window.map;
