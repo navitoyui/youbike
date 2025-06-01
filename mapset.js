@@ -1,11 +1,13 @@
 window.map = null;
-let marker = [];
+let markers = [];
 let stations = [];
 let futureMin = 10;
-let common = [];
+let commonLocations = [];
 
-function init() {
+
+function initMap() {
     map = L.map("map").setView([25.0330, 121.5654], 13)
+
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -13,12 +15,13 @@ function init() {
         maxZoom: 20
     }).addTo(map);
 
-    map.on("moveend", updateView);
+    map.on("moveend", updateStationsInView);
 
-    Stations();
+    fetchStations();
 }
 
-async function Stations() {
+
+async function fetchStations() {
     try {
         const resp = await fetch("https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json");
         const data = await resp.json();
@@ -29,42 +32,43 @@ async function Stations() {
             return !isNaN(lat) && !isNaN(lng);
         });
 
-        updateView();
+        updateStationsInView();
     } catch (error) {
         console.error("error：", error);
     }
 }
 
-function updateView() {
+function updateStationsInView() {
     const bounds = map.getBounds();
-    marker.forEach(mk => map.removeLayer(mk));
-    marker = [];
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
 
     stations.forEach(station => {
         const lat = parseFloat(station.latitude);
         const lng = parseFloat(station.longitude);
 
         if (bounds.contains([lat, lng])) {
-            const mk = L.marker([lat, lng])
+            const marker = L.marker([lat, lng])
                 .addTo(map)
                 .bindPopup(`<div>
           <h3>${station.sna} (${station.sno})</h3>
           <p>目前可借：${station.available_rent_bikes} 輛</p>
           <p>目前可停車位：${parseInt(station.total, 10) - parseInt(station.available_rent_bikes, 10)} 格</p>
-          <p id="predi-${station.sno}">載入中...</p>
-          <p><button onclick="addCommon('${station.sna}', ${lat}, ${lng})">儲存為常用地點</button></p>
+          <p id="prediction-${station.sno}">載入中...</p>
+          <p><button onclick="addToCommonLocations('${station.sna}', ${lat}, ${lng})">儲存為常用地點</button></p>
         </div>`);
 
-            mk.on("popupopen", function() {
-                sendPredi(station);
+            marker.on("popupopen", function() {
+                sendPredictionRequest(station);
             });
 
-            marker.push(mk);
+            markers.push(marker);
         }
     });
 }
 
-async function sendPredi(station) {
+
+async function sendPredictionRequest(station) {
     const now = new Date();
     const minuteOfDay = now.getHours() * 60 + now.getMinutes();
     const isWeekend = now.getDay() === 6 || now.getDay() === 0 ? 1 : 0;
@@ -91,36 +95,39 @@ async function sendPredi(station) {
         const predictedRentBikes = result.predicted_rent_bikes;
         const predictedAvailableSpaces = totalSpaces - predictedRentBikes;
 
-        const predEl = document.getElementById(`predi-${station.sno}`);
+        const predEl = document.getElementById(`prediction-${station.sno}`);
         if (predEl) {
             predEl.innerHTML =
                 `<p>${futureMin} 分鐘後可借：${predictedRentBikes} 輛</p>
          <p>${futureMin} 分鐘後可停車位：${predictedAvailableSpaces} 格</p>`;
         }
     } catch (error) {
-        const predEl = document.getElementById(`predi-${station.sno}`);
+        const predEl = document.getElementById(`prediction-${station.sno}`);
         if (predEl) {
             predEl.innerHTML = `<p>請稍後再試</p>`;
         }
     }
 }
 
+
 function predict() {
     futureMin = parseInt(document.getElementById("futureMin").value, 10) || futureMin;
-    updateView();
+    updateStationsInView();
 }
 
-function addCommon(name, lat, lng) {
-    if (!common.some(loc => loc.name === name && loc.lat === lat && loc.lng === lng)) {
-        common.push({ name, lat, lng });
-        render();
+
+function addToCommonLocations(name, lat, lng) {
+    if (!commonLocations.some(loc => loc.name === name && loc.lat === lat && loc.lng === lng)) {
+        commonLocations.push({ name, lat, lng });
+        renderCommonLocations();
     }
 }
 
-function render() {
-    const list = document.getElementById("commonlist");
+
+function renderCommonLocations() {
+    const list = document.getElementById("common-locations-list");
     list.innerHTML = "";
-    common.forEach((location, index) => {
+    commonLocations.forEach((location, index) => {
         const item = document.createElement("li");
         item.textContent = location.name;
         const flyBtn = document.createElement("button");
@@ -131,8 +138,8 @@ function render() {
         const removeBtn = document.createElement("button");
         removeBtn.textContent = "移除";
         removeBtn.onclick = () => {
-            common.splice(index, 1);
-            render();
+            commonLocations.splice(index, 1);
+            renderCommonLocations();
         };
         item.appendChild(flyBtn);
         item.appendChild(removeBtn);
@@ -140,7 +147,8 @@ function render() {
     });
 }
 
-async function search() {
+
+async function searchLocation() {
     const searchBox = document.getElementById("searchBox").value;
     if (!searchBox) {
         alert("請輸入地區或地址");
@@ -169,11 +177,11 @@ async function search() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    init();
+    initMap();
     document.getElementById("searchBox").addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
-            search();
+            searchLocation();
         }
     });
-    document.getElementById("searchBtn").addEventListener("click", search);
+    document.getElementById("searchBtn").addEventListener("click", searchLocation);
 });
