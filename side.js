@@ -25,14 +25,3 @@ function toggleExhibitionView(viewType) {
     }
 }
 
-function toggleEventView(viewType) {
-    document.getElementById("event-upcoming-btn").classList.remove("active");
-    document.getElementById("event-ongoing-btn").classList.remove("active");
-    if (viewType === "upcoming") {
-        document.getElementById("event-upcoming-btn").classList.add("active");
-        loadEvents("coming");
-    } else {
-        document.getElementById("event-ongoing-btn").classList.add("active");
-        loadEvents("now");
-    }
-}
