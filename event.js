@@ -1,15 +1,17 @@
-// == 活動功能完整版 (僅用內建圖檔，marker 綠色) ==
+setInterval(() => {
+  allEvents = [];  
+  loadEventsNow(); 
+}, 5 * 60 * 1000); 
 
 let eventHighlightMarker = null;
 let allEvents = [];
 const EVENT_JSON = "travel_taipei.json";
 
-// 取得全域地圖物件
+
 function getMapInstance() {
     return window.map;
 }
 
-// 載入活動資料並快取
 async function fetchAllEvents() {
     if (allEvents.length) return;
     try {
@@ -20,9 +22,8 @@ async function fetchAllEvents() {
     }
 }
 
-// 判斷活動是否在目前地圖畫面範圍
 function isEventInMapView(ev, mapInstance) {
-    if (!mapInstance) return true; // fallback: 全部顯示
+    if (!mapInstance) return true; 
     if (typeof ev.lat === "undefined" || typeof ev.lng === "undefined") return false;
     const latlng = L.latLng(ev.lat, ev.lng);
     return mapInstance.getBounds().contains(latlng);
@@ -34,11 +35,11 @@ function escapeHtml(html) {
     return div.innerHTML;
 }
 
-// 展示活動卡片，支援介紹收合/展開與地圖滑動
+
 function renderEventCards(events) {
     const container = document.getElementById("event-content");
     if (!events.length) {
-        container.innerHTML = "<p>目前畫面內無符合條件的活動。</p>";
+        container.innerHTML = "<p>範圍內無活動。</p>";
         // 也移除 marker
         if (eventHighlightMarker && getMapInstance()) {
             getMapInstance().removeLayer(eventHighlightMarker);
@@ -60,7 +61,7 @@ function renderEventCards(events) {
     </div>
   `).join("");
 
-    // 綁定查看地點按鈕
+    
     container.querySelectorAll('.event-locate-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const lat = parseFloat(this.dataset.lat);
@@ -69,11 +70,11 @@ function renderEventCards(events) {
             const mapInstance = getMapInstance();
             if (mapInstance && !isNaN(lat) && !isNaN(lng)) {
                 mapInstance.flyTo([lat, lng], 17, { duration: 1.2 });
-                // 移除舊 marker
+                
                 if (eventHighlightMarker) {
                     mapInstance.removeLayer(eventHighlightMarker);
                 }
-                // 建立綠色 marker
+                
                 const greenIcon = L.icon({
                     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
                     iconSize: [25, 41],
@@ -91,7 +92,7 @@ function renderEventCards(events) {
         });
     });
 
-    // 綁定閱讀更多/收合
+    
     container.querySelectorAll('.event-more-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const idx = this.dataset.idx;
@@ -112,7 +113,7 @@ function renderEventCards(events) {
     });
 }
 
-// 畫面活動主流程：載入、篩選、渲染
+
 async function loadEventsNow() {
     await fetchAllEvents();
     const mapInstance = getMapInstance();
@@ -120,15 +121,14 @@ async function loadEventsNow() {
     renderEventCards(events);
 }
 
-// 地圖移動時，重新過濾活動
+
 function updateEventsOnMapMove() {
     loadEventsNow();
 }
 
-// 預設載入進行中活動，並監聽地圖移動
+
 document.addEventListener("DOMContentLoaded", function() {
     loadEventsNow();
-    // 監聽地圖移動
     let retryCount = 0;
     let interval = setInterval(() => {
         const mapInstance = getMapInstance();
