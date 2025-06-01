@@ -40,7 +40,7 @@ jobs:
         run: python process.py
 
       - name: Process travel.json for frontend
-        run: python travel_to_sidejson.py
+        run: python proc_travel.py
 
       - name: Commit and push changes
         run: |
