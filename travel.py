@@ -90,7 +90,7 @@ for link in event_links:
     try:
         description = driver.find_element(
             By.XPATH, road1 + "section[2]//article[contains(@class, 'EventDetail-module-f5e97a44-event-content')]"
-        ).get_attribute('innerHTML')
+        ).text
     except Exception as e:
         description = ""
     try:
