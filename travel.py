@@ -8,8 +8,8 @@ from selenium.webdriver.common.keys import Keys
 
 # 初始化 Selenium 瀏覽器（無頭模式）
 options = Options()
-# options.add_argument("--headless")  # 不開啟瀏覽器視窗
-# options.add_argument("--disable-gpu")
+options.add_argument("--headless")  # 不開啟瀏覽器視窗
+options.add_argument("--disable-gpu")
 driver = webdriver.Chrome(options=options)
 
 # 目標頁面
