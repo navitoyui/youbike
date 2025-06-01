@@ -5,14 +5,12 @@ import time
 import os
 import re
 
-# 你的 Google API 金鑰
 GOOGLE_API_KEY = "AIzaSyDgtDeWRhHdZgUzdGkDCJEDQBvwWPh84CU"
 GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 TAIPEI_KEYWORDS = ["台北市", "臺北市"]
 
-# 自動切換目錄到腳本所在位置
 os.chdir(os.path.dirname(__file__))
-print("已切換目錄：", os.getcwd())
+print("切換至：", os.getcwd())
 
 def clean_address(addr):
     return re.sub(r'（.*?）', '', addr)
@@ -50,7 +48,7 @@ def process_travel_csv(input_csv, output_json):
                 continue
             cleaned = clean_address(addr)
             geo = geocode(cleaned)
-            time.sleep(0.5)  # 防止 API 配額過度消耗
+            time.sleep(0.5)
             if geo:
                 lat, lng, display_name = geo
                 if is_in_taipei(display_name):
@@ -59,12 +57,12 @@ def process_travel_csv(input_csv, output_json):
                     row['google_address'] = display_name
                     processed.append(row)
                 else:
-                    print(f"排除：{addr} (非台北市)")
+                    print(f"排除：{addr}")
             else:
                 print(f"無法定位：{addr}")
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump(processed, f, ensure_ascii=False, indent=2)
-    print(f"{output_json} 輸出完成，共 {len(processed)} 筆")
+    print(f"{output_json} finish，total: {len(processed)}")
 
 if __name__ == "__main__":
-    process_travel_csv("accupass_travel.csv", "travel_taipei.json")
+    process_travel_csv("../csv/accupass_travel.csv", "../json/travel_taipei.json")
