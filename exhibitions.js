@@ -13,8 +13,8 @@ async function infoExhibit() {
     if (allExhibit.now.length && allExhibit.coming.length) return;
     try {
         const [nowRes, comingRes] = await Promise.all([
-            fetch("https://navitoyui.github.io/youbike/json/exhibitions_now_taipei.json"),
-            fetch("https://navitoyui.github.io/youbike/json/exhibitions_coming_taipei.json")
+            fetch("exhibitions_now_taipei.json"),
+            fetch("exhibitions_coming_taipei.json")
         ]);
         allExhibit.now = await nowRes.json();
         allExhibit.coming = await comingRes.json();

@@ -118,7 +118,7 @@ for link in event_links:
 
 # 儲存為 CSV
 df = pd.DataFrame(data)
-df.to_csv("../csv/accupass_travel.csv", index=False, encoding="utf-8-sig")
+df.to_csv("accupass_travel.csv", index=False, encoding="utf-8-sig")
 print("save accupass_travel.csv")
 sys.stdout.flush()
 

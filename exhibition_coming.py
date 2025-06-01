@@ -128,7 +128,7 @@ for block in blocks:
     num+=1
 
 # 寫入 CSV
-with open("../csv/emperor_coming.csv", "w", newline="", encoding="utf-8-sig") as f:
+with open("emperor_coming.csv", "w", newline="", encoding="utf-8-sig") as f:
     fieldnames = ["Link", "Place", "Title", "Image", "Date", "Location", "InfoLink", "Member", "Article"]
     writer = csv.DictWriter(f, fieldnames=fieldnames)
     writer.writeheader()

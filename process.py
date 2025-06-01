@@ -64,5 +64,5 @@ def process_csv(input_csv, output_json):
     print(f"{output_json} finish，total: {len(processed)}")
 
 if __name__ == "__main__":
-    process_csv("../csv/emperor_coming.csv", "../json/exhibitions_coming_taipei.json")
-    process_csv("../csv/emperor_now.csv", "../json/exhibitions_now_taipei.json")
+    process_csv("emperor_coming.csv", "exhibitions_coming_taipei.json")
+    process_csv("emperor_now.csv", "exhibitions_now_taipei.json")

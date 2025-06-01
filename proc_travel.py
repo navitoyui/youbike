@@ -65,4 +65,4 @@ def process_travel_csv(input_csv, output_json):
     print(f"{output_json} finish，total: {len(processed)}")
 
 if __name__ == "__main__":
-    process_travel_csv("../csv/accupass_travel.csv", "../json/travel_taipei.json")
+    process_travel_csv("accupass_travel.csv", "travel_taipei.json")

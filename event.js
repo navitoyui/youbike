@@ -1,6 +1,6 @@
 let eventMark = null;
 let allEvents = [];
-const eventjs = "https://navitoyui.github.io/youbike/json/travel_taipei.json";
+const eventjs = "travel_taipei.json";
 
 function getMap() {
     return window.map;
